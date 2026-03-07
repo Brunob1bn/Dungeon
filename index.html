@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
-  <title>Masmorra do Porão Selado</title>
+  <title>Masmorra do PorÃ£o Selado</title>
   <style>
     :root {
       --ui: rgba(255,255,255,0.12);
@@ -227,17 +227,17 @@
   <canvas id="game"></canvas>
   <div id="rotateWarning" aria-live="polite">
     <div id="rotateWarningCard">
-      <div id="rotateWarningIcon">📱</div>
+      <div id="rotateWarningIcon">ðŸ“±</div>
       <div id="rotateWarningTitle">Melhor em horizontal</div>
       <div id="rotateWarningText">Vire o celular para jogar melhor.
-Depois, use tela cheia para os botões não ficarem grudados.</div>
-      <div id="rotateWarningTips">Entre em tela cheia e deixe o celular de lado antes de começar a jogar.</div>
+Depois, use tela cheia para os botÃµes nÃ£o ficarem grudados.</div>
+      <div id="rotateWarningTips">Entre em tela cheia e deixe o celular de lado antes de comeÃ§ar a jogar.</div>
       <button id="rotateFullscreenBtn" type="button">Entrar em tela cheia</button>
     </div>
   </div>
   <div id="hint"></div>
-  <button id="soundToggle" type="button">🔊 Som ON</button>
-  <div id="dialogueBox" role="dialog" aria-live="polite" aria-label="Diálogo">
+  <button id="soundToggle" type="button">ðŸ”Š Som ON</button>
+  <div id="dialogueBox" role="dialog" aria-live="polite" aria-label="DiÃ¡logo">
     <div id="dialogueText"></div>
     <div id="dialogueContinue">toque para continuar</div>
   </div>
@@ -288,11 +288,11 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       const tipsEl = document.getElementById('rotateWarningTips');
       if (textEl && tipsEl) {
         if (!landscape) {
-          textEl.textContent = 'Vire o celular para jogar melhor.\nDepois, use tela cheia para os botões não ficarem grudados.';
+          textEl.textContent = 'Vire o celular para jogar melhor.\nDepois, use tela cheia para os botÃµes nÃ£o ficarem grudados.';
           tipsEl.textContent = 'Quando estiver no modo horizontal, toque em "Entrar em tela cheia".';
         } else if (!fullscreen) {
           textEl.textContent = 'Agora entre em tela cheia para jogar melhor.';
-          tipsEl.textContent = 'Isso evita que os botões fiquem grudados e melhora a área útil da tela.';
+          tipsEl.textContent = 'Isso evita que os botÃµes fiquem grudados e melhora a Ã¡rea Ãºtil da tela.';
         }
       }
       if (rotateFullscreenBtn) rotateFullscreenBtn.hidden = !landscape || fullscreen;
@@ -316,16 +316,10 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
     document.addEventListener('fullscreenchange', updateRotateWarning);
     document.addEventListener('webkitfullscreenchange', updateRotateWarning);
     if (rotateFullscreenBtn) {
-      rotateFullscreenBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        try { await requestGameFullscreen(); } catch (err) {}
+      rotateFullscreenBtn.addEventListener('click', function () {
+        requestGameFullscreen();
         setTimeout(updateRotateWarning, 120);
       });
-      rotateFullscreenBtn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }, { passive: false });
     }
     updateRotateWarning();
 
@@ -349,7 +343,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
     const soundState = { blockPushCd: 0 };
 
     function updateSoundToggleLabel() {
-      soundToggleEl.textContent = soundEnabled ? '🔊 Som ON' : '🔇 Som OFF';
+      soundToggleEl.textContent = soundEnabled ? 'ðŸ”Š Som ON' : 'ðŸ”‡ Som OFF';
       soundToggleEl.classList.toggle('off', !soundEnabled);
     }
 
@@ -786,7 +780,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       };
       buildBorderWalls(room, 48);
       room.props.push(rect(420, 70, 120, 32), rect(420, 538, 120, 32));
-      room.doors.push({ x: 902, y: 270, w: 28, h: 100, target: 'main', spawn: { x: 626, y: 72 }, locked: true, label: 'Saída selada' });
+      room.doors.push({ x: 902, y: 270, w: 28, h: 100, target: 'main', spawn: { x: 626, y: 72 }, locked: true, label: 'SaÃ­da selada' });
       room.enemies.push(
         makeEnemy('goblin', 560, 250),
         makeEnemy('goblin', 660, 340),
@@ -876,7 +870,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         id: 'boss', type: 'boss', w: 980, h: 720,
         walls: [], doors: [], enemies: [], props: [], blocks: [], holes: [], levers: [], projectiles: [], boss: null,
         torches: [{ x: 160, y: 110 }, { x: 820, y: 110 }],
-        objective: 'Derrote o guardião do porão.',
+        objective: 'Derrote o guardiÃ£o do porÃ£o.',
         meta: {}
       };
       buildBorderWalls(room, 54);
@@ -955,9 +949,9 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       centerCamera(instant);
       if (!(game.mode === 'intro' && id === 'room1') && game.room.objective) showHint(game.room.objective, 2600);
       if (id === 'boss') {
-        showHint('O guardião desperta...', 2300);
+        showHint('O guardiÃ£o desperta...', 2300);
         sfx.bossAppear();
-        queueDialogue('Esse deve ser o guardião... Ele é muito maior do que eu pensava.', 'bossEntry');
+        queueDialogue('Esse deve ser o guardiÃ£o... Ele Ã© muito maior do que eu pensava.', 'bossEntry');
       }
     }
 
@@ -1175,7 +1169,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
           room.levers.forEach(l => l.on = false);
         }, 170);
         beep(110, 0.12, 'sawtooth', 0.018);
-        showHint('Sequência errada. As alavancas resetaram.', 1800);
+        showHint('SequÃªncia errada. As alavancas resetaram.', 1800);
       }
     }
 
@@ -1188,8 +1182,8 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         triggerShake(12);
         chord([150, 190, 240, 320], 0.04, 'triangle', 0.03);
         sfx.hatchOpen();
-        showHint('O porão central se abriu!', 2400);
-        queueDialogue('Alguma coisa se abriu... mas parece que esta tudo caindo aos pedaços.', 'leverSolved');
+        showHint('O porÃ£o central se abriu!', 2400);
+        queueDialogue('Alguma coisa se abriu... mas parece que esta tudo caindo aos pedaÃ§os.', 'leverSolved');
         game.dialog.pendingLeverOpenLine = false;
         for (let i = 0; i < 42; i++) {
           pushParticle(main.hatch.x + rand(0, main.hatch.w), main.hatch.y + rand(0, 6), rand(-40, 40), rand(10, 70), rand(0.45, 0.95), COLORS.dust, rand(2, 5));
@@ -1248,9 +1242,9 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         boss.dead = true;
         boss.hp = 0;
         chord([220, 190, 160, 130], 0.08, 'sine', 0.03);
-        showHint('O guardião caiu.', 2000);
+        showHint('O guardiÃ£o caiu.', 2000);
         setTimeout(() => {
-          queueDialogue(['E-eu... eu sobrevivi ?.', 'Q-que sensação foi essa...'], 'bossDefeat');
+          queueDialogue(['E-eu... eu sobrevivi ?.', 'Q-que sensaÃ§Ã£o foi essa...'], 'bossDefeat');
           game.dialog.pendingVictory = true;
           processDialogueQueue();
         }, 900);
@@ -1274,7 +1268,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (player.hp <= 0) {
         player.hp = 0;
         player.dead = true;
-        showHint('Você caiu... retornando ao último ponto.', 2000);
+        showHint('VocÃª caiu... retornando ao Ãºltimo ponto.', 2000);
       }
     }
 
@@ -1401,7 +1395,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
             transitionTo(d.target, d.spawn);
             return;
           } else {
-            showHint(d.label || 'A porta está selada.', 1100);
+            showHint(d.label || 'A porta estÃ¡ selada.', 1100);
           }
         }
       }
@@ -1658,7 +1652,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
           room1.lit = true;
           showHint(room1.objective, 2400);
           queueDialogue('Esse lugar fede muito....', 'intro');
-          queueDialogue('É... isso vai demorar...', 'room1Entry');
+          queueDialogue('Ã‰... isso vai demorar...', 'room1Entry');
         }
       }
     }
@@ -1949,7 +1943,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         ctx.fillRect(-hw * 0.18, -hh * 0.54, hw * 0.36, hh * 0.9);
         ctx.fillStyle = '#bcc4d6';
         ctx.fillRect(-hw * 0.1, hh * 0.18, hw * 0.2, hh * 0.56);
-        // braços finos
+        // braÃ§os finos
         ctx.fillStyle = '#dce1ef';
         ctx.fillRect(-hw * 0.56, -hh * 0.1, 5, hh * 0.86);
         ctx.fillRect(hw * 0.56 - 5, -hh * 0.1, 5, hh * 0.86);
@@ -2094,7 +2088,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         ctx.fillText('Arraste o dedo para o lado', game.camera.x + cw / 2, game.camera.y + ch / 2 + 10);
         ctx.font = '14px Trebuchet MS, sans-serif';
         ctx.globalAlpha = 0.8;
-        ctx.fillText('ou use A/D ou ←/→ no computador', game.camera.x + cw / 2, game.camera.y + ch / 2 + 36);
+        ctx.fillText('ou use A/D ou â†/â†’ no computador', game.camera.x + cw / 2, game.camera.y + ch / 2 + 36);
         ctx.globalAlpha = 1;
       }
     }
@@ -2181,9 +2175,9 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       ctx.font = 'bold 15px Trebuchet MS, sans-serif';
       let label = 'Espada pronta';
       if (game.room.id === 'push') label = game.globalFlags.pushSolved ? 'Pedras resolvidas' : 'Empurre os blocos';
-      if (game.room.id === 'lever') label = game.globalFlags.leverSolved ? 'Alavancas resolvidas' : 'Acerte a sequência';
-      if (game.room.id === 'main' && game.globalFlags.hatchOpened) label = 'Porão aberto';
-      if (game.room.id === 'boss') label = 'Derrote o guardião';
+      if (game.room.id === 'lever') label = game.globalFlags.leverSolved ? 'Alavancas resolvidas' : 'Acerte a sequÃªncia';
+      if (game.room.id === 'main' && game.globalFlags.hatchOpened) label = 'PorÃ£o aberto';
+      if (game.room.id === 'boss') label = 'Derrote o guardiÃ£o';
       ctx.fillText(label, cw / 2, topY + 31);
       ctx.textAlign = 'start';
 
@@ -2203,7 +2197,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         ctx.fillStyle = COLORS.uiTxt;
         ctx.textAlign = 'center';
         ctx.font = 'bold 16px Trebuchet MS, sans-serif';
-        ctx.fillText('Guardião do Porão', cw / 2, by - 8);
+        ctx.fillText('GuardiÃ£o do PorÃ£o', cw / 2, by - 8);
         ctx.textAlign = 'start';
       }
 
@@ -2329,13 +2323,13 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       ctx.fillStyle = '#f5ecd8';
       ctx.textAlign = 'center';
       ctx.font = 'bold 30px Trebuchet MS, sans-serif';
-      ctx.fillText('Vitória!', cw / 2, y + 56);
+      ctx.fillText('VitÃ³ria!', cw / 2, y + 56);
       ctx.font = '16px Trebuchet MS, sans-serif';
-      ctx.fillText('O guardião foi derrotado e a masmorra silenciou.', cw / 2, y + 92);
+      ctx.fillText('O guardiÃ£o foi derrotado e a masmorra silenciou.', cw / 2, y + 92);
       ctx.fillText('Toque em qualquer lugar para jogar de novo.', cw / 2, y + 126);
       ctx.font = 'bold 14px Trebuchet MS, sans-serif';
       ctx.fillStyle = '#d7a34b';
-      ctx.fillText('Masmorra do Porão Selado', cw / 2, y + 168);
+      ctx.fillText('Masmorra do PorÃ£o Selado', cw / 2, y + 168);
       ctx.textAlign = 'start';
       ctx.restore();
     }
@@ -2624,7 +2618,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
 
 
 
-    // === Expansão pós-Boss 1: papel, sala de alavancas contadas, armadilha e queda ===
+    // === ExpansÃ£o pÃ³s-Boss 1: papel, sala de alavancas contadas, armadilha e queda ===
     const __origInitRooms = initRooms;
     const __origSetRoom = setRoom;
     const __origInteractNearby = interactNearby;
@@ -2660,7 +2654,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         }
       };
       buildBorderWalls(room, 48);
-      room.doors.push({ x: 426, y: 586, w: 68, h: 28, target: 'boss', spawn: { x: 462, y: 112 }, locked: false, label: 'Voltar ao guardião' });
+      room.doors.push({ x: 426, y: 586, w: 68, h: 28, target: 'boss', spawn: { x: 462, y: 112 }, locked: false, label: 'Voltar ao guardiÃ£o' });
       room.props.push(
         rect(210, 208, 500, 24),
         rect(156, 468, 608, 28),
@@ -2729,7 +2723,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         id: 'depth', type: 'safeDepth', w: 960, h: 680,
         walls: [], doors: [], enemies: [], props: [], blocks: [], holes: [], levers: [], projectiles: [], boss: null,
         torches: [{ x: 160, y: 102 }, { x: 800, y: 102 }, { x: 470, y: 582 }],
-        objective: 'Você sobreviveu à queda.',
+        objective: 'VocÃª sobreviveu Ã  queda.',
         meta: {}
       };
       buildBorderWalls(room, 50);
@@ -3027,7 +3021,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         lever.on = false;
         beep(88, 0.15, 'sawtooth', 0.018, 0, 68);
         beep(62, 0.12, 'square', 0.014, 0.05, 54);
-        showHint(`Alavanca ${index + 1} reiniciou após 10 puxões.`, 1600);
+        showHint(`Alavanca ${index + 1} reiniciou apÃ³s 10 puxÃµes.`, 1600);
         triggerShake(3);
         return;
       }
@@ -3082,7 +3076,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       beep(90, 0.16, 'sawtooth', 0.02, 0, 60);
       noise(0.09, 0.004, 0.02, 420);
       triggerShake(12);
-      showHint('O chão cedeu sob seus pés!', 1700);
+      showHint('O chÃ£o cedeu sob seus pÃ©s!', 1700);
       for (let i = 0; i < 22; i++) {
         pushParticle(holeX + rand(0, holeW), holeY + rand(0, holeH * 0.35), rand(-55, 55), rand(-35, 120), rand(0.28, 0.58), i % 2 ? COLORS.dust : '#8b7d6a', rand(2, 5));
       }
@@ -3108,7 +3102,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         game.room.meta.secretExit.open = !!game.globalFlags.noteCollected;
       }
       if (id === 'countLever') {
-        showHint(game.globalFlags.noteKnown ? 'Use a pista: 2 • 5 • 3.' : 'Você ainda não encontrou a pista.', 2500);
+        showHint(game.globalFlags.noteKnown ? 'Use a pista: 2 â€¢ 5 â€¢ 3.' : 'VocÃª ainda nÃ£o encontrou a pista.', 2500);
       } else if (id === 'trapLever') {
         showHint('A alavanca parece uma armadilha.', 2200);
       } else if (id === 'fall') {
@@ -3138,7 +3132,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         player.dirY = 1;
         player.facing = Math.PI * 0.5;
       } else if (id === 'depth') {
-        showHint('Você alcançou a plataforma lateral.', 2200);
+        showHint('VocÃª alcanÃ§ou a plataforma lateral.', 2200);
       }
     };
 
@@ -3200,9 +3194,9 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         game.projectiles.length = 0;
         chord([220, 190, 160, 130], 0.08, 'sine', 0.03);
         sfx.victory();
-        showHint('O guardião caiu. Algo foi deixado no chão.', 2400);
+        showHint('O guardiÃ£o caiu. Algo foi deixado no chÃ£o.', 2400);
         setTimeout(() => {
-          queueDialogue(['E-eu... eu sobrevivi ?.', 'Q-que sensação foi essa...'], 'bossDefeat');
+          queueDialogue(['E-eu... eu sobrevivi ?.', 'Q-que sensaÃ§Ã£o foi essa...'], 'bossDefeat');
           processDialogueQueue();
         }, 900);
       }
@@ -3226,7 +3220,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
             game.globalFlags.noteSequence = [2, 5, 3];
             room.meta.secretExit.open = true;
             chord([196, 247, 330], 0.05, 'triangle', 0.02);
-            showHint('Você encontrou um papel rasgado.', 1700);
+            showHint('VocÃª encontrou um papel rasgado.', 1700);
             queueDialogue([
               'Um papel rasgado... talvez isso seja importante.',
               'I    II    III\n2     5     3',
@@ -3296,7 +3290,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         meta.platformY = room.h + 64;
         if (!meta.platformHintShown) {
           meta.platformHintShown = true;
-          showHint('Uma plataforma apareceu lá embaixo, à esquerda!', 1600);
+          showHint('Uma plataforma apareceu lÃ¡ embaixo, Ã  esquerda!', 1600);
         }
       }
 
@@ -3315,7 +3309,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         triggerShake(6);
         burst(player.x + player.w / 2, playerFeetY, 12, ['#d9d9d9', '#aab3bb', '#f0f5ff'], 80);
         player.y = platform.y - player.h;
-        showHint('Você alcançou a plataforma!', 1400);
+        showHint('VocÃª alcanÃ§ou a plataforma!', 1400);
         setTimeout(() => {
           if (game.room && game.room.id === 'fall') transitionTo('depth', { x: 112, y: 316 });
         }, 140);
@@ -3330,7 +3324,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         player.spawnY = 520;
         player.dead = true;
         player.hp = 0;
-        showHint('Você caiu no abismo. O puzzle foi reiniciado.', 2400);
+        showHint('VocÃª caiu no abismo. O puzzle foi reiniciado.', 2400);
       }
     };
 
@@ -3427,13 +3421,13 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (game.room.id === 'boss' && game.room.boss && game.room.boss.dead) {
         drawHudObjectiveOverlay(game.globalFlags.noteCollected ? 'Passe pela abertura' : 'Pegue o papel');
       } else if (game.room.id === 'countLever') {
-        drawHudObjectiveOverlay(game.globalFlags.noteKnown ? 'Acerte 2 • 5 • 3' : 'Procure a pista');
+        drawHudObjectiveOverlay(game.globalFlags.noteKnown ? 'Acerte 2 â€¢ 5 â€¢ 3' : 'Procure a pista');
       } else if (game.room.id === 'trapLever') {
         drawHudObjectiveOverlay('Cuidado com a alavanca');
       } else if (game.room.id === 'fall') {
         drawHudObjectiveOverlay('Alcance a plataforma');
       } else if (game.room.id === 'depth') {
-        drawHudObjectiveOverlay('Você sobreviveu');
+        drawHudObjectiveOverlay('VocÃª sobreviveu');
       }
     };
 
@@ -3553,7 +3547,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       const room = {
         id: 'fall', type: 'fallChallenge', w: 1600, h: 3600,
         walls: [], doors: [], enemies: [], props: [], blocks: [], holes: [], levers: [], projectiles: [], boss: null,
-        torches: [], objective: 'Alcance a plataforma à direita.',
+        torches: [], objective: 'Alcance a plataforma Ã  direita.',
         meta: {
           shaftLeft: 300,
           shaftRight: 1300,
@@ -3620,7 +3614,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       beep(96, 0.12, 'sawtooth', 0.02, 0, 74);
       noise(0.11, 0.006, 0.02, 520);
       triggerShake(12);
-      showHint('O chão cedeu exatamente sob seus pés!', 1700);
+      showHint('O chÃ£o cedeu exatamente sob seus pÃ©s!', 1700);
 
       for (let i = 0; i < 26; i++) {
         pushParticle(
@@ -3806,7 +3800,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       const platformScreenY = platform.y - game.camera.y;
       if (!meta.platformHintShown && platformScreenY < ch + 110) {
         meta.platformHintShown = true;
-        showHint('A plataforma está à direita!', 1500);
+        showHint('A plataforma estÃ¡ Ã  direita!', 1500);
       }
 
       const feetPrev = prevY + player.h;
@@ -3821,7 +3815,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         noise(0.025, 0.003, 0.01, 280);
         triggerShake(5);
         burst(player.x + player.w / 2, platform.y, 12, ['#d9d9d9', '#aab3bb', '#f0f5ff'], 84);
-        showHint('Você pousou na plataforma!', 1400);
+        showHint('VocÃª pousou na plataforma!', 1400);
         return;
       }
 
@@ -3833,13 +3827,13 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         player.spawnY = 520;
         player.dead = true;
         player.hp = 0;
-        showHint('Você caiu no abismo. O puzzle foi reiniciado.', 2400);
+        showHint('VocÃª caiu no abismo. O puzzle foi reiniciado.', 2400);
       }
     };
 
 
 
-    // === Patch final: sem queda, nova sala após armadilha e modificadores permanentes ===
+    // === Patch final: sem queda, nova sala apÃ³s armadilha e modificadores permanentes ===
     const __finalPatchInitRooms = initRooms;
     const __finalPatchSetRoom = setRoom;
     const __finalPatchUpdateGame = updateGame;
@@ -3902,7 +3896,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         id: 'depth', type: 'postTrap', w: 960, h: 680,
         walls: [], doors: [], enemies: [], props: [], blocks: [], holes: [], levers: [], projectiles: [], boss: null,
         torches: [{ x: 164, y: 96 }, { x: 800, y: 96 }, { x: 480, y: 96 }],
-        objective: 'Você foi parar em outra parte da dungeon.',
+        objective: 'VocÃª foi parar em outra parte da dungeon.',
         meta: {
           entryMarker: { x: 412, y: 604, w: 136, h: 20 }
         }
@@ -3953,7 +3947,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       panel.appendChild(title);
 
       const subtitle = document.createElement('div');
-      subtitle.textContent = 'Essa escolha é permanente.';
+      subtitle.textContent = 'Essa escolha Ã© permanente.';
       subtitle.style.cssText = 'font-size:13px;text-align:center;opacity:.78;margin-bottom:14px;';
       panel.appendChild(subtitle);
 
@@ -4003,8 +3997,8 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         return btn;
       }
 
-      const russellBtn = makeChoice('🐱 Russell', 'Um gato aliado que segue o jogador e arranha inimigos.', '#f5d98d');
-      const fragmentBtn = makeChoice('💎 Fragmentos', 'Ao perder vida, o jogador solta fragmentos. Ao coletar 3, recupera 1 coração.', '#f39aa1');
+      const russellBtn = makeChoice('ðŸ± Russell', 'Um gato aliado que segue o jogador e arranha inimigos.', '#f5d98d');
+      const fragmentBtn = makeChoice('ðŸ’Ž Fragmentos', 'Ao perder vida, o jogador solta fragmentos. Ao coletar 3, recupera 1 coraÃ§Ã£o.', '#f39aa1');
 
       panel.appendChild(choices);
       overlay.appendChild(panel);
@@ -4068,7 +4062,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       } else {
         game.modifiers.fragments.count = 0;
         game.modifiers.fragments.items.length = 0;
-        queueDialogue(['Fragmentos vermelhos...? Eles parecem reagir à minha dor.'], 'fragmentChoice');
+        queueDialogue(['Fragmentos vermelhos...? Eles parecem reagir Ã  minha dor.'], 'fragmentChoice');
       }
       processDialogueQueue();
     }
@@ -4106,7 +4100,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       ctx.fillStyle = '#e7a14b';
       ctx.fillRect(r.x + 8, r.y + 10, r.w - 16, r.h - 13);
 
-      // cabeça
+      // cabeÃ§a
       ctx.fillStyle = '#8a4e18';
       ctx.fillRect(r.x + 4, r.y + 2, r.w - 8, 11);
       ctx.fillStyle = '#cf8133';
@@ -4207,7 +4201,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         r.y += (ty - r.y) * Math.min(1, dt * 4.2);
         if (dist(r.x, r.y, tx, ty) < 10) {
           r.entering = false;
-          showHint('Russell agora segue você.', 1600);
+          showHint('Russell agora segue vocÃª.', 1600);
         }
         return;
       }
@@ -4299,7 +4293,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         player.hp = Math.min(player.maxHp, player.hp + 1);
         chord([220, 277, 330], 0.035, 'triangle', 0.018);
         burst(player.x + player.w * 0.5, player.y + player.h * 0.5, 10, ['#ff8c96', '#ffd4d8', '#ffffff'], 72);
-        showHint('Os fragmentos restauraram 1 coração.', 1600);
+        showHint('Os fragmentos restauraram 1 coraÃ§Ã£o.', 1600);
       }
     }
 
@@ -4484,14 +4478,14 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       __finalPatchDrawHud();
       ensureModifierState();
       if (game.globalFlags.modifierChoice === 'russell') {
-        drawModifierBadge('🐱 Russell');
+        drawModifierBadge('ðŸ± Russell');
       } else if (game.globalFlags.modifierChoice === 'fragmentos') {
-        drawModifierBadge(`💎 Fragmentos ${Math.min(3, game.modifiers.fragments.count)}/3`);
+        drawModifierBadge(`ðŸ’Ž Fragmentos ${Math.min(3, game.modifiers.fragments.count)}/3`);
       }
     };
 
 
-    // === Expansão da dungeon após o Boss 1: combate, botões, tochas, placas e lore ===
+    // === ExpansÃ£o da dungeon apÃ³s o Boss 1: combate, botÃµes, tochas, placas e lore ===
     const __dungeon2InitRooms = initRooms;
     const __dungeon2SetRoom = setRoom;
     const __dungeon2InteractNearby = interactNearby;
@@ -4590,7 +4584,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         makeBlock(710, 404)
       );
       room.doors.push(
-        { x: 456, y: 66, w: 68, h: 28, target: 'torch2', spawn: { x: 470, y: 574 }, locked: true, label: 'As tochas ainda não revelaram a passagem.' }
+        { x: 456, y: 66, w: 68, h: 28, target: 'torch2', spawn: { x: 470, y: 574 }, locked: true, label: 'As tochas ainda nÃ£o revelaram a passagem.' }
       );
       return room;
     }
@@ -4621,7 +4615,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         rect(432, 500, 136, 22)
       );
       room.doors.push(
-        { x: 466, y: 66, w: 68, h: 28, target: 'lore2', spawn: { x: 470, y: 574 }, locked: true, label: 'As tochas ainda não revelaram a saída.' }
+        { x: 466, y: 66, w: 68, h: 28, target: 'lore2', spawn: { x: 470, y: 574 }, locked: true, label: 'As tochas ainda nÃ£o revelaram a saÃ­da.' }
       );
       return room;
     }
@@ -4631,7 +4625,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         id: 'lore2', type: 'lore2', w: 1020, h: 720,
         walls: [], doors: [], enemies: [], props: [], blocks: [], holes: [], levers: [], projectiles: [], boss: null,
         torches: [{ x: 170, y: 96 }, { x: 850, y: 96 }],
-        objective: 'Observe a construção estranha da dungeon.',
+        objective: 'Observe a construÃ§Ã£o estranha da dungeon.',
         meta: {}
       };
       buildBorderWalls(room, 52);
@@ -4696,7 +4690,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         beep(94, 0.08, 'square', 0.018, 0, 80);
         noise(0.03, 0.002, 0.01, 240);
         triggerShake(4);
-        showHint('Sequência errada. Os botões reiniciaram.', 1500);
+        showHint('SequÃªncia errada. Os botÃµes reiniciaram.', 1500);
       }
     }
 
@@ -4768,7 +4762,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         beep(94, 0.08, 'square', 0.018, 0, 80);
         noise(0.03, 0.002, 0.01, 240);
         triggerShake(4);
-        showHint('Sequência errada. As tochas se apagaram.', 1600);
+        showHint('SequÃªncia errada. As tochas se apagaram.', 1600);
       }
     }
 
@@ -4942,16 +4936,16 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         player.spawnRoom = 'trialCombat';
         player.spawnX = spawn.x;
         player.spawnY = spawn.y;
-        showHint(game.globalFlags.modifierChoice === 'russell' ? 'Russell observa os goblins de perto.' : 'Você chegou a outra ala da dungeon.', 2100);
+        showHint(game.globalFlags.modifierChoice === 'russell' ? 'Russell observa os goblins de perto.' : 'VocÃª chegou a outra ala da dungeon.', 2100);
       } else if (id === 'pressure2') {
         showHint('Empurre um bloco para cada placa.', 2000);
       } else if (id === 'torch2') {
         showHint('Talvez exista uma ordem certa para acender as tochas.', 2200);
       } else if (id === 'lore2' && !game.globalFlags.loreSeen2) {
         game.globalFlags.loreSeen2 = true;
-        queueDialogue(['por que esses monstros estão construindo isso ?', 'tem muitas defesas...', 'uma dungeon normal já teria acabado no primeiro boss...'], 'loreRoom2');
+        queueDialogue(['por que esses monstros estÃ£o construindo isso ?', 'tem muitas defesas...', 'uma dungeon normal jÃ¡ teria acabado no primeiro boss...'], 'loreRoom2');
       } else if (id === 'continue2') {
-        showHint('A exploração continua nas profundezas da dungeon.', 2400);
+        showHint('A exploraÃ§Ã£o continua nas profundezas da dungeon.', 2400);
       }
     };
 
@@ -5017,7 +5011,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
           if (!meta.wallLineShown) {
             meta.wallLineShown = true;
             queueDialogue('Algo se moveu na parede...', 'trialCombatClear2');
-            showHint('Há 5 botões de pedra na parede.', 2200);
+            showHint('HÃ¡ 5 botÃµes de pedra na parede.', 2200);
           }
         }
       } else if (game.room.id === 'pressure2') {
@@ -5051,7 +5045,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (!game.room) return;
       if (game.room.id === 'trialCombat') {
         const meta = game.room.meta;
-        drawHudObjectiveOverlay(!meta.combatCleared ? 'Derrote os goblins' : (meta.buttonsSolved ? 'Passe pela parede secreta' : 'Descubra a ordem dos botões'));
+        drawHudObjectiveOverlay(!meta.combatCleared ? 'Derrote os goblins' : (meta.buttonsSolved ? 'Passe pela parede secreta' : 'Descubra a ordem dos botÃµes'));
       } else if (game.room.id === 'pressure2') {
         drawHudObjectiveOverlay(game.room.meta.solved ? 'A porta se abriu' : 'Ative as 3 placas');
       } else if (game.room.id === 'torch2') {
@@ -5064,7 +5058,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
     };
 
 
-    // === Capítulo 1 final: menu inicial, configurações, Boss 2 e encerramento ===
+    // === CapÃ­tulo 1 final: menu inicial, configuraÃ§Ãµes, Boss 2 e encerramento ===
     const __chapter1PrevUpdateGame = updateGame;
     const __chapter1PrevDrawRoom = drawRoom;
     const __chapter1PrevDrawHud = drawHud;
@@ -5181,7 +5175,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (game.chapter1Ui.menuPanel) game.chapter1Ui.menuPanel.style.display = 'none';
       if (game.chapter1Ui.settingsPanel) game.chapter1Ui.settingsPanel.style.display = 'none';
       if (game.chapter1Ui.finalPanel) game.chapter1Ui.finalPanel.style.display = 'block';
-      if (game.chapter1Ui.finalTitle) game.chapter1Ui.finalTitle.textContent = 'CAPÍTULO 1 CONCLUÍDO';
+      if (game.chapter1Ui.finalTitle) game.chapter1Ui.finalTitle.textContent = 'CAPÃTULO 1 CONCLUÃDO';
       if (game.chapter1Ui.finalSub) game.chapter1Ui.finalSub.textContent = 'A dungeon continua...';
       soundToggleEl.style.display = 'none';
       resetTouchControls();
@@ -5232,13 +5226,13 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
 
       const menuPanel = createPanel();
       const menuTitle = document.createElement('div');
-      menuTitle.textContent = 'Masmorra do Porão Selado';
+      menuTitle.textContent = 'Masmorra do PorÃ£o Selado';
       menuTitle.style.cssText = 'font-size:30px;font-weight:700;text-align:center;margin-bottom:10px;color:#f5ecd8;text-shadow:0 2px 12px rgba(0,0,0,0.4);';
       const menuSub = document.createElement('div');
-      menuSub.textContent = 'Capítulo 1';
+      menuSub.textContent = 'CapÃ­tulo 1';
       menuSub.style.cssText = 'font-size:14px;text-align:center;opacity:.76;margin-bottom:16px;letter-spacing:.8px;text-transform:uppercase;';
-      const startBtn = createButton('Começar', 'linear-gradient(to bottom, rgba(215,163,75,0.32), rgba(90,52,24,0.26))');
-      const settingsBtn = createButton('Configurações');
+      const startBtn = createButton('ComeÃ§ar', 'linear-gradient(to bottom, rgba(215,163,75,0.32), rgba(90,52,24,0.26))');
+      const settingsBtn = createButton('ConfiguraÃ§Ãµes');
       menuPanel.appendChild(menuTitle);
       menuPanel.appendChild(menuSub);
       menuPanel.appendChild(startBtn);
@@ -5247,7 +5241,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       const settingsPanel = createPanel();
       settingsPanel.style.display = 'none';
       const settingsTitle = document.createElement('div');
-      settingsTitle.textContent = 'Configurações';
+      settingsTitle.textContent = 'ConfiguraÃ§Ãµes';
       settingsTitle.style.cssText = 'font-size:28px;font-weight:700;text-align:center;margin-bottom:16px;';
       const soundRow = document.createElement('div');
       soundRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0;';
@@ -5342,7 +5336,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       b.maxHp = 36;
       b.attackCd = 99;
       b.state = 'idle';
-      b.name = 'Asceta Pálido';
+      b.name = 'Asceta PÃ¡lido';
       b.variant = 'boss2';
       b.shardCd = 5.8;
       return b;
@@ -5399,7 +5393,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       }
       burst(cx, cy, 18, ['#ffffff', '#d8dcff', '#b7bde8'], 118);
       chord([290, 340, 392], 0.05, 'triangle', 0.015);
-      showHint('O Asceta Pálido libera estilhaços!', 1200);
+      showHint('O Asceta PÃ¡lido libera estilhaÃ§os!', 1200);
     }
 
     function drawBoss2Extras(room) {
@@ -5422,7 +5416,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         ctx.beginPath();
         ctx.ellipse(cx, cy + 2, 40, 54, 0, 0, TAU);
         ctx.fill();
-        // véu claro atrás do corpo
+        // vÃ©u claro atrÃ¡s do corpo
         ctx.fillStyle = 'rgba(245,245,255,0.3)';
         ctx.beginPath();
         ctx.moveTo(cx, b.y + 12);
@@ -5449,7 +5443,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (cont && !cont.doors.some(d => d.target === 'boss2')) {
         cont.doors.push({ x: 506, y: 66, w: 68, h: 28, target: 'boss2', spawn: { x: 520, y: 610 }, locked: false, label: 'Sala final' });
       }
-      if (cont) cont.objective = 'A passagem final está logo adiante.';
+      if (cont) cont.objective = 'A passagem final estÃ¡ logo adiante.';
     };
 
     setRoom = function chapter1PatchedSetRoom(id, spawn, instant = false) {
@@ -5509,7 +5503,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         room.meta.endTimer = 1.15;
         chord([220, 184, 156, 120], 0.08, 'sine', 0.03);
         sfx.victory();
-        showHint('O Asceta Pálido foi derrotado.', 2000);
+        showHint('O Asceta PÃ¡lido foi derrotado.', 2000);
       }
     };
 
@@ -5546,13 +5540,13 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
           triggerShake(4.4);
           if (meta.introTimer <= 0 && !meta.dialogueQueued) {
             meta.dialogueQueued = true;
-            queueDialogue('Então... era isso que eles estavam protegendo.', 'boss2Entry');
+            queueDialogue('EntÃ£o... era isso que eles estavam protegendo.', 'boss2Entry');
             processDialogueQueue();
           } else if (meta.dialogueQueued && !game.dialog.active && game.dialog.seen.boss2Entry) {
             meta.fightStarted = true;
             boss.attackCd = 1.2;
             sfx.bossAppear();
-            showHint('O Asceta Pálido desperta.', 1800);
+            showHint('O Asceta PÃ¡lido desperta.', 1800);
           }
         }
         if (boss && meta.fightStarted && !boss.dead) {
@@ -5576,7 +5570,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
             meta.endPending = false;
             if (!meta.finalDialogueQueued) {
               meta.finalDialogueQueued = true;
-              queueDialogue(['Isso... ainda não era o fundo da dungeon.', 'Se eles protegiam isso...', 'Então o que existe mais abaixo?'], 'chapter1Boss2End');
+              queueDialogue(['Isso... ainda nÃ£o era o fundo da dungeon.', 'Se eles protegiam isso...', 'EntÃ£o o que existe mais abaixo?'], 'chapter1Boss2End');
               processDialogueQueue();
             }
           }
@@ -5608,7 +5602,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (game.room.id === 'continue2') {
         drawHudObjectiveOverlay('Siga para a sala final');
       } else if (game.room.id === 'boss2') {
-        drawHudObjectiveOverlay(game.room.meta.fightStarted && !game.room.boss.dead ? 'Derrote o Asceta Pálido' : 'A sala estremece...');
+        drawHudObjectiveOverlay(game.room.meta.fightStarted && !game.room.boss.dead ? 'Derrote o Asceta PÃ¡lido' : 'A sala estremece...');
         const bw = Math.min(460, cw - 40);
         const bx = (cw - bw) / 2;
         const by = 28 + envTop() + 50 + 18;
@@ -5617,7 +5611,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         ctx.fillStyle = COLORS.uiTxt;
         ctx.textAlign = 'center';
         ctx.font = 'bold 16px Trebuchet MS, sans-serif';
-        ctx.fillText('Asceta Pálido', cw / 2, by - 8);
+        ctx.fillText('Asceta PÃ¡lido', cw / 2, by - 8);
         ctx.textAlign = 'start';
         ctx.restore();
       }
