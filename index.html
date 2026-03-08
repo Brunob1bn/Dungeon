@@ -227,7 +227,7 @@
   <canvas id="game"></canvas>
   <div id="rotateWarning" aria-live="polite">
     <div id="rotateWarningCard">
-      <div id="rotateWarningIcon">📱</div>
+      <div id="rotateWarningIcon">↻</div>
       <div id="rotateWarningTitle">Melhor em horizontal</div>
       <div id="rotateWarningText">Vire o celular para jogar melhor.
 Depois, use tela cheia para os botões não ficarem grudados.</div>
@@ -253,6 +253,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
     const dialogueContinueEl = document.getElementById('dialogueContinue');
     const rotateWarningEl = document.getElementById('rotateWarning');
     const rotateFullscreenBtn = document.getElementById('rotateFullscreenBtn');
+    let rotateWarningDismissed = false;
 
     function isTouchMobile() {
       return window.matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -266,11 +267,19 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
     }
 
+    function canRequestGameFullscreen() {
+      const el = document.documentElement;
+      return !!(el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen);
+    }
+
     function requestGameFullscreen() {
       const el = document.documentElement;
-      if (el.requestFullscreen) return el.requestFullscreen();
-      if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
-      if (el.msRequestFullscreen) return el.msRequestFullscreen();
+      try {
+        if (el.requestFullscreen) return el.requestFullscreen();
+        if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+        if (el.msRequestFullscreen) return el.msRequestFullscreen();
+      } catch (err) {
+      }
       return Promise.resolve();
     }
 
@@ -282,20 +291,24 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       }
       const landscape = isLandscape();
       const fullscreen = isFullscreenActive();
-      const shouldShow = !landscape || !fullscreen;
+      const wantsFullscreen = canRequestGameFullscreen();
+      const shouldShow = !landscape || (!fullscreen && !rotateWarningDismissed);
       rotateWarningEl.classList.toggle('show', shouldShow);
       const textEl = document.getElementById('rotateWarningText');
       const tipsEl = document.getElementById('rotateWarningTips');
       if (textEl && tipsEl) {
         if (!landscape) {
           textEl.textContent = 'Vire o celular para jogar melhor.\nDepois, use tela cheia para os botões não ficarem grudados.';
-          tipsEl.textContent = 'Quando estiver no modo horizontal, toque em "Entrar em tela cheia".';
-        } else if (!fullscreen) {
-          textEl.textContent = 'Agora entre em tela cheia para jogar melhor.';
-          tipsEl.textContent = 'Isso evita que os botões fiquem grudados e melhora a área útil da tela.';
+          tipsEl.textContent = 'Quando estiver no modo horizontal, toque em "Continuar" para começar.';
+        } else if (!fullscreen && !rotateWarningDismissed) {
+          textEl.textContent = wantsFullscreen ? 'Agora entre em tela cheia para jogar melhor.' : 'Seu navegador não abriu a tela cheia, mas você já pode continuar.';
+          tipsEl.textContent = wantsFullscreen ? 'Se nada acontecer, toque de novo em "Continuar" e o jogo abre mesmo assim.' : 'Os controles ainda vão funcionar normalmente.';
         }
       }
-      if (rotateFullscreenBtn) rotateFullscreenBtn.hidden = !landscape || fullscreen;
+      if (rotateFullscreenBtn) {
+        rotateFullscreenBtn.hidden = !landscape || (fullscreen || rotateWarningDismissed);
+        rotateFullscreenBtn.textContent = wantsFullscreen ? 'Continuar' : 'Continuar sem tela cheia';
+      }
     }
 
     let cw = 0, ch = 0, DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
@@ -316,10 +329,17 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
     document.addEventListener('fullscreenchange', updateRotateWarning);
     document.addEventListener('webkitfullscreenchange', updateRotateWarning);
     if (rotateFullscreenBtn) {
-      rotateFullscreenBtn.addEventListener('click', function () {
-        requestGameFullscreen();
-        setTimeout(updateRotateWarning, 120);
-      });
+      const continueGame = function () {
+        rotateWarningDismissed = true;
+        Promise.resolve(requestGameFullscreen()).catch(() => {}).finally(() => {
+          setTimeout(updateRotateWarning, 180);
+        });
+      };
+      rotateFullscreenBtn.addEventListener('click', continueGame);
+      rotateFullscreenBtn.addEventListener('touchend', function (ev) {
+        ev.preventDefault();
+        continueGame();
+      }, { passive: false });
     }
     updateRotateWarning();
 
@@ -1824,49 +1844,160 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       }
     }
 
+    function getPlayerSpriteDirection() {
+      const ax = Math.abs(player.dirX || 0);
+      const ay = Math.abs(player.dirY || 0);
+      if (ay > ax * 0.9) return (player.dirY || 0) < 0 ? 'up' : 'down';
+      return (player.dirX || 0) < 0 ? 'left' : 'right';
+    }
+
+    function drawRotRect(cx, cy, rw, rh, angle, fill, stroke = null, alpha = 1) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle);
+      ctx.globalAlpha *= alpha;
+      ctx.fillStyle = fill;
+      ctx.fillRect(-rw / 2, -rh / 2, rw, rh);
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = Math.max(1, Math.round(Math.min(rw, rh) * 0.12));
+        ctx.strokeRect(-rw / 2, -rh / 2, rw, rh);
+      }
+      ctx.restore();
+    }
+
+    function drawKnightFront(x, y, w, h, step) {
+      const px = (sx, sy, sw, sh, c, a = 1) => {
+        ctx.globalAlpha = a;
+        ctx.fillStyle = c;
+        ctx.fillRect(Math.round(x + w * sx), Math.round(y + h * sy), Math.max(1, Math.round(w * sw)), Math.max(1, Math.round(h * sh)));
+      };
+      const capeSwing = step * 0.02;
+      px(0.19, 0.16, 0.62, 0.64, '#101219', 0.94);
+      px(0.16 - capeSwing, 0.24, 0.18, 0.52, '#161a24');
+      px(0.66 + capeSwing, 0.24, 0.16, 0.52, '#161a24');
+      px(0.13, 0.27, 0.22, 0.17, '#4b5262');
+      px(0.65, 0.27, 0.22, 0.17, '#4b5262');
+      px(0.25, 0.26, 0.5, 0.46, '#242936');
+      px(0.28, 0.3, 0.44, 0.06, '#6d7484');
+      px(0.31, 0.36, 0.38, 0.24, '#191d28');
+      px(0.44, 0.33, 0.13, 0.31, '#ffe17e');
+      px(0.35, 0.42, 0.31, 0.09, '#ffe17e');
+      px(0.435, 0.29, 0.14, 0.39, 'rgba(255,220,120,0.16)');
+      px(0.3, 0.62, 0.4, 0.07, '#77502a');
+      px(0.29, 0.03, 0.42, 0.29, '#1f2430');
+      px(0.33, 0.015, 0.34, 0.06, '#4b5262');
+      px(0.31, 0.08, 0.38, 0.17, '#0d1017');
+      px(0.35, 0.13, 0.09, 0.06, '#ffcf45');
+      px(0.56, 0.13, 0.09, 0.06, '#ffcf45');
+      px(0.29, 0.7, 0.15, 0.22, '#262b39');
+      px(0.56, 0.7, 0.15, 0.22, '#262b39');
+      px(0.22, 0.44, 0.09, 0.28, '#202531');
+      px(0.69, 0.44, 0.09, 0.28, '#202531');
+      drawRotRect(x + w * 0.18, y + h * 0.67, w * 0.11, h * 0.13, Math.PI * 0.06, '#b48649');
+      drawRotRect(x + w * 0.185, y + h * 0.84, w * 0.095, h * 0.56, Math.PI * 0.1, '#d9dce4');
+      drawRotRect(x + w * 0.186, y + h * 0.83, w * 0.028, h * 0.5, Math.PI * 0.1, '#8f97a9');
+      px(0.16, 0.99, 0.05, 0.05, '#f0f3fa');
+      ctx.globalAlpha = 1;
+    }
+
+    function drawKnightBack(x, y, w, h, step) {
+      const px = (sx, sy, sw, sh, c, a = 1) => {
+        ctx.globalAlpha = a;
+        ctx.fillStyle = c;
+        ctx.fillRect(Math.round(x + w * sx), Math.round(y + h * sy), Math.max(1, Math.round(w * sw)), Math.max(1, Math.round(h * sh)));
+      };
+      const capeWave = step * 0.03;
+      px(0.22, 0.08, 0.56, 0.22, '#2a3040');
+      px(0.16, 0.23, 0.68, 0.62, '#0e1118');
+      px(0.14 - capeWave, 0.29, 0.24, 0.54, '#171b24');
+      px(0.62 + capeWave, 0.29, 0.24, 0.54, '#171b24');
+      px(0.28, 0.03, 0.44, 0.25, '#1f2330');
+      px(0.34, 0.015, 0.32, 0.06, '#4a5262');
+      px(0.25, 0.28, 0.5, 0.15, '#424958');
+      px(0.31, 0.73, 0.13, 0.19, '#242936');
+      px(0.56, 0.73, 0.13, 0.19, '#242936');
+      ctx.globalAlpha = 1;
+    }
+
+    function drawKnightSide(x, y, w, h, facingRight, frontBias, step) {
+      ctx.save();
+      if (!facingRight) {
+        ctx.translate(x + w, 0);
+        ctx.scale(-1, 1);
+        x = 0;
+      }
+      const px = (sx, sy, sw, sh, c, a = 1) => {
+        ctx.globalAlpha = a;
+        ctx.fillStyle = c;
+        ctx.fillRect(Math.round(x + w * sx), Math.round(y + h * sy), Math.max(1, Math.round(w * sw)), Math.max(1, Math.round(h * sh)));
+      };
+      const capeWave = step * 0.025 + (1 - frontBias) * 0.02;
+      px(0.17 - capeWave, 0.17, 0.3, 0.64, '#11131a', 0.96);
+      px(0.1 - capeWave, 0.25, 0.22, 0.52, '#171a24');
+      px(0.33, 0.27, 0.36, 0.46, '#252a36');
+      px(0.28, 0.29, 0.18, 0.15, '#4a5161');
+      px(0.58, 0.3, 0.17, 0.15, '#4a5161');
+      px(0.45, 0.34, 0.15, 0.26, '#1a1e29');
+      if (frontBias > 0.4) {
+        px(0.485, 0.35, 0.1, 0.23, '#ffe17e');
+        px(0.445, 0.435, 0.2, 0.065, '#ffe17e');
+      }
+      px(0.43, 0.62, 0.19, 0.07, '#6e4a24');
+      px(0.41, 0.035, 0.25, 0.27, '#202531');
+      px(0.46, 0.015, 0.18, 0.06, '#4b5262');
+      px(0.52, 0.115, 0.1, 0.055, '#ffcf45');
+      px(0.35, 0.45, 0.09, 0.26, '#1e232e');
+      px(0.6, 0.43, 0.08, 0.28, '#1e232e');
+      px(0.45, 0.7, 0.11, 0.22, '#262b39');
+      px(0.6, 0.7, 0.1, 0.22, '#262b39');
+      drawRotRect(x + w * 0.73, y + h * 0.67, w * 0.11, h * 0.12, Math.PI * 0.16, '#b48649');
+      drawRotRect(x + w * 0.79, y + h * 0.8, w * 0.11, h * 0.53, Math.PI * 0.58, '#d9dce4');
+      drawRotRect(x + w * 0.79, y + h * 0.8, w * 0.03, h * 0.48, Math.PI * 0.58, '#8b93a4');
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
+
     function drawPlayer() {
       const flash = player.hurtTimer > 0 && Math.sin(game.time * 35) > 0;
       const x = player.x, y = player.y, w = player.w, h = player.h;
-      const eyeSize = Math.max(2, Math.round(w * 0.08));
+      const visW = w * 1.12, visH = h * 1.12;
+      const visX = x - (visW - w) * 0.5;
+      const visY = y - (visH - h) + 1;
       const dashGlow = player.dashTimer > 0 ? 0.55 + Math.sin(game.time * 50) * 0.15 : 0;
+      const dir = getPlayerSpriteDirection();
+      const moving = Math.abs(player.vx) + Math.abs(player.vy) > 6 || input.joystick.active;
+      const step = moving ? Math.sin(game.time * 10) : Math.sin(game.time * 3) * 0.25;
       ctx.save();
       if (flash) ctx.globalAlpha = 0.45;
-      ctx.fillStyle = 'rgba(0,0,0,0.26)';
-      ctx.fillRect(x + w * 0.14, y + h - 6, w * 0.72, 7);
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillRect(x + w * 0.08, y + h - 6, w * 0.84, 7);
       if (dashGlow > 0) {
-        ctx.fillStyle = `rgba(125,221,255,${dashGlow * 0.35})`;
-        ctx.fillRect(x - 4, y - 4, w + 8, h + 8);
+        ctx.fillStyle = `rgba(255,208,95,${dashGlow * 0.18})`;
+        ctx.fillRect(visX - 5, visY - 5, visW + 10, visH + 10);
       }
-      ctx.fillStyle = COLORS.heroShadow;
-      ctx.fillRect(x + w * 0.12, y + h * 0.26, w * 0.58, h * 0.54);
-      ctx.fillStyle = COLORS.heroCape;
-      ctx.fillRect(x + w * 0.12, y + h * 0.32, w * 0.46, h * 0.42);
-      ctx.fillStyle = COLORS.hero;
-      ctx.fillRect(x + w * 0.18, y + h * 0.18, w * 0.52, h * 0.5);
-      ctx.fillStyle = COLORS.heroTrim;
-      ctx.fillRect(x + w * 0.22, y + h * 0.22, w * 0.42, h * 0.08);
-      ctx.fillStyle = COLORS.heroSkin;
-      ctx.fillRect(x + w * 0.24, y + h * 0.04, w * 0.38, h * 0.3);
-      ctx.fillStyle = '#b6894b';
-      ctx.fillRect(x + w * 0.4, y + h * 0.36, w * 0.16, h * 0.22);
-      ctx.fillStyle = '#ffffff';
-      const eyeShiftX = Math.round(player.dirX * 1.8);
-      const eyeShiftY = Math.round(player.dirY * 1.5);
-      ctx.fillRect(Math.round(x + w * 0.31 + eyeShiftX), Math.round(y + h * 0.15 + eyeShiftY), eyeSize, eyeSize);
-      ctx.fillRect(Math.round(x + w * 0.5 + eyeShiftX), Math.round(y + h * 0.15 + eyeShiftY), eyeSize, eyeSize);
-      ctx.fillStyle = '#0b1c27';
-      ctx.fillRect(Math.round(x + w * 0.18), Math.round(y + h * 0.18), w * 0.06, h * 0.5);
+      if (dir === 'down') {
+        drawKnightFront(visX, visY, visW, visH, step);
+      } else if (dir === 'up') {
+        drawKnightBack(visX, visY, visW, visH, step);
+      } else if (dir === 'right') {
+        drawKnightSide(visX, visY, visW, visH, true, 1, step);
+      } else {
+        drawKnightSide(visX, visY, visW, visH, false, 0, step);
+      }
       ctx.restore();
     }
 
     function drawGoblin(e) {
       const flash = e.hurtTimer > 0 && Math.sin(game.time * 30) > 0;
-      const x = e.x, y = e.y, w = e.w, h = e.h;
+      const scale = 1.1;
+      const w = e.w * scale, h = e.h * scale;
+      const x = e.x - (w - e.w) * 0.5, y = e.y - (h - e.h) + 1;
       const eyeSize = Math.max(2, Math.round(w * 0.08));
       ctx.save();
       if (flash) ctx.globalAlpha = 0.4;
       ctx.fillStyle = 'rgba(0,0,0,0.24)';
-      ctx.fillRect(x + w * 0.1, y + h - 5, w * 0.78, 6);
+      ctx.fillRect(e.x + e.w * 0.08, e.y + e.h - 5, e.w * 0.84, 6);
       ctx.fillStyle = COLORS.goblinDark;
       ctx.fillRect(x + w * 0.12, y + h * 0.3, w * 0.66, h * 0.48);
       ctx.fillStyle = COLORS.goblin;
@@ -1888,9 +2019,11 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       const flash = e.hurtTimer > 0 && Math.sin(game.time * 30) > 0;
       const bob = Math.sin(e.bob) * 4;
       const flap = Math.sin(game.time * 22 + e.x * 0.3) * 1.8;
+      const scale = 1.12;
       ctx.save();
       if (flash) ctx.globalAlpha = 0.4;
       ctx.translate(e.x + e.w / 2, e.y + e.h / 2 + bob);
+      ctx.scale(scale, scale);
       ctx.fillStyle = 'rgba(0,0,0,0.18)';
       ctx.fillRect(-11, 11, 22, 4);
       ctx.fillStyle = COLORS.batDark;
@@ -1915,7 +2048,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       const hh = b.h / 2;
       ctx.save();
       ctx.translate(b.x + hw, b.y + hh);
-      ctx.scale(pulse, pulse);
+      ctx.scale(pulse * 1.03, pulse * 1.03);
       if (flash) ctx.globalAlpha = 0.42;
       if (b.variant === 'boss2') {
         const haloA = 0.22 + Math.sin(game.time * 6.5) * 0.06;
@@ -3102,7 +3235,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
         game.room.meta.secretExit.open = !!game.globalFlags.noteCollected;
       }
       if (id === 'countLever') {
-        showHint(game.globalFlags.noteKnown ? 'Use a pista: 2 • 5 • 3.' : 'Você ainda não encontrou a pista.', 2500);
+        showHint(game.globalFlags.noteKnown ? 'Use a pista: 2  5  3.' : 'Você ainda não encontrou a pista.', 2500);
       } else if (id === 'trapLever') {
         showHint('A alavanca parece uma armadilha.', 2200);
       } else if (id === 'fall') {
@@ -3421,7 +3554,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (game.room.id === 'boss' && game.room.boss && game.room.boss.dead) {
         drawHudObjectiveOverlay(game.globalFlags.noteCollected ? 'Passe pela abertura' : 'Pegue o papel');
       } else if (game.room.id === 'countLever') {
-        drawHudObjectiveOverlay(game.globalFlags.noteKnown ? 'Acerte 2 • 5 • 3' : 'Procure a pista');
+        drawHudObjectiveOverlay(game.globalFlags.noteKnown ? 'Acerte 2  5  3' : 'Procure a pista');
       } else if (game.room.id === 'trapLever') {
         drawHudObjectiveOverlay('Cuidado com a alavanca');
       } else if (game.room.id === 'fall') {
@@ -4480,7 +4613,7 @@ Depois, use tela cheia para os botões não ficarem grudados.</div>
       if (game.globalFlags.modifierChoice === 'russell') {
         drawModifierBadge('🐱 Russell');
       } else if (game.globalFlags.modifierChoice === 'fragmentos') {
-        drawModifierBadge(`💎 Fragmentos ${Math.min(3, game.modifiers.fragments.count)}/3`);
+        drawModifierBadge(` Fragmentos ${Math.min(3, game.modifiers.fragments.count)}/3`);
       }
     };
 
